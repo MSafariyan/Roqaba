@@ -1,0 +1,31 @@
+version: "3"
+services:
+    web:
+        build: .
+        command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py loaddata fixture/publisher.json && python manage.py runserver 0.0.0.0:8080"
+        ports:
+            - 8080:8080
+        volumes:
+            - ./web:/web
+        depends_on:
+            - postgres
+        networks:
+            postgres_network:
+        links:
+            - postgres:postgres
+    postgres:
+        image: postgres
+        networks:
+            postgres_network:
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_DB: ketabland
+            POSTGRES_PASSWORD: postgres
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/posgresql/data
+volumes:
+    pgdata:
+networks:
+    postgres_network:

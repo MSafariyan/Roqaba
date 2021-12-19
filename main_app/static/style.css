@@ -1,0 +1,11 @@
+hr{
+    border: solid 1px orange;
+    border-radius: 50px;
+}
+select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: orange;
+    border: orange;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: black;
+}

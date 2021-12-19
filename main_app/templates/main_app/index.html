@@ -1,0 +1,136 @@
+{% extends "main_app/base.html" %}
+{% block content%}
+    
+<div class="d-flex justify-content-center">
+   <div class="col-md-3 mt-5">
+        <div class="input-group">
+              <span class="input-group-text bg-warning" style="border-radius: 0 .25rem .25rem 0;" id="liveSearch2">🔍</span>
+            <input type="text" class="form-control" style="border-radius: .25rem 0 0 .25rem !important;" placeholder="جستجو..." aria-label="Search" id="liveSearch">
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-center">
+   <div class="col-md-12 spinner-border text-warning mt-5" role="status" id='spinner' style="width: 6rem; height: 6rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+ 
+<section class="">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center" id="datalist">
+            {% for product in products %}
+            <div class="col mb-5">
+                <div class="card h-100"  style="background-color:#f8f9fa">
+                    <img src="{{product.img}}" class="card-img-top" alt="...">
+                    <!-- Product details-->
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <!-- Product name-->
+                            <div style="height:100px;">
+                                <h5 class="fw-bolder" >{{product.title}}</h5>
+                            </div>
+                            <!-- Product price-->
+                            <div class="mt-3">
+                                <span class="text-danger display-6">{{product.current_price}}</span><br>
+                                <span class="text-success display-6">{{product.special_price}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Product actions-->
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <div class="d-grid gap-2">
+                                    <a class="btn btn-warning mt-auto rounded-0" href="{% url 'show-product' product.id %}">جزئیات</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block js %}
+{{ block.super }}
+<script>
+ $(document).ready(function(){
+     original = $("#datalist").html()
+     $("#spinner").hide()
+     $("#liveSearch").on("input",function(e){
+         console.log($("liveSearch").val())
+         if($("#liveSearch").val().length >= 4)
+         {
+             console.log($("#liveSearch").val())
+             $("#spinner").show()
+             $.ajax({
+                 method:"GET",
+                 url:"{% url 'liveSearch' %}",
+                 data:{q:$("#liveSearch").val()},
+                 success:function(res){
+                     setTimeout(function(){
+                         if(res != '')
+                         {
+                             var data = ""
+                             $.each(res, function(index,value){
+                                 data += '<div class="col mb-5">\
+                                        <div class="card h-100"  style="background-color:#f8f9fa">\
+                                            <img src="'+value['img']+'" class="card-img-top" alt="...">\
+                                            <!-- Product details-->\
+                                            <div class="card-body p-4">\
+                                                <div class="text-center">\
+                                                    <!-- Product name-->\
+                                                    <div style="height:100px;">\
+                                                        <h5 class="fw-bolder" >'+value['title']+'</h5>\
+                                                    </div>\
+                                                    <!-- Product price-->\
+                                                    <div class="mt-3">\
+                                                        <span class="text-danger display-6">'+value['current_price']+'</span><br>\
+                                                        <span class="text-success display-6">'+value['special_price']+'</span>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                            <!-- Product actions-->\
+                                            <div class="row mt-2">\
+                                                <div class="col-md-12">\
+                                                    <div class="text-center">\
+                                                        <div class="d-grid gap-2">\
+                                                            <a class="roubded-0 btn btn-warning mt-auto" href="/book/'+value['id']+'">جزئیات</a>\
+                                                        </div>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                    </div>';
+                             });
+                             $("#datalist").html(data);
+                             $("#spinner").hide()
+                         }
+                         else
+                         {
+                             $("#spinner").hide()
+                             var data = "<p>محصولی با این جزئیات یافت نشد.</p>"
+                             $("#datalist").html(data);
+                         }
+                     }, 3000);
+                 }
+             });
+         }
+         else
+         {
+             $("#datalist").html('');
+             $('#spinner').addClass('hide');
+             $('#db').addClass('hide');
+             $("#intro").removeClass("hide");
+
+         }
+         if($("#liveSearch").val() === '' | $("#liveSearch").val().length <= 3 ){
+             $("#datalist").html(original);
+             $("#spinner").hide()
+         }
+     });
+ });
+</script>
+{% endblock%}

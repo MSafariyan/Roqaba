@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "roqaba"
+version = "0.1.0"
+description = ""
+authors = ["M. Safariyan <MA.Hiccup@gmail.com>", "M. Yas. Davoodeh <MYDavoodeh@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.2.5"
+Scrapy = "^2.5.0"
+scrapy-djangoitem = "^1.1.1"
+scrapyd = "^1.2.1"
+stem = "^1.8.0"
+psycopg2-binary = "^2.9.1"
+django-admin-interface = "^0.16.3"
+django-widget-tweaks = "^1.4.8"
+gunicorn = "^20.1.0"
+python-dotenv = "^0.19.2"
+django-environ = "^0.8.1"
+python-environ = "^0.4.54"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79

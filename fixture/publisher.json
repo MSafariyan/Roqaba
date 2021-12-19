@@ -1,0 +1,42 @@
+[
+    {
+        "model": "main_app.publisher",
+        "pk": 1,
+        "fields": {
+            "publisher_name": "jangal"
+        }
+    },
+    {
+        "model": "main_app.publisher",
+        "pk": 2,
+        "fields": {
+            "publisher_name": "zabanshop"
+        }
+    },
+    {
+        "model": "main_app.publisher",
+        "pk": 3,
+        "fields": {
+            "publisher_name": "zabantak"
+        }
+    },
+    {
+        "model": "main_app.publisher",
+        "pk": 4,
+        "fields": {
+            "publisher_name": "rahnama"
+        }
+    }, {
+        "model": "main_app.publisher",
+        "pk": 5,
+        "fields": {
+            "publisher_name": "irlanguage"
+        }
+    }, {
+        "model": "main_app.publisher",
+        "pk": 6,
+        "fields": {
+            "publisher_name": "zabanmehr"
+        }
+    }
+]

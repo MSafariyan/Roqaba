@@ -1,0 +1,307 @@
+{% extends "main_app/base.html" %}
+{% load main_tags %}
+{% block css %}
+<style>
+ a{
+     text-decoration: none;
+     color:#ed6104;
+
+ }
+ a:hover{
+     color:black;
+ }
+ $light: #F8F8F9;
+
+ .apex-line {
+     width: 100%;
+
+     .apexcharts-legend {
+         background: $light;
+         border-radius: 4px;
+     }
+
+     .apexcharts-legend-marker {
+         margin-right: 6px;
+     }
+ }
+
+ .apex-vert-bar {
+     width: 100%;
+
+     .apexcharts-legend {
+         background: $light;
+         border-radius: 4px;
+     }
+
+     .apexcharts-legend-marker {
+         margin-right: 6px;
+     }
+ }
+ .card-img-top{
+     width: 150px!important;
+ }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-md-5 text-center border border-5 rounded border-light p-4">
+            <div class="card">
+                <div class="card text-center">
+                    <div class="card-header">
+                        {{product.title}}
+                    </div>
+                    <div class="card-body">
+                        <img src="{{product.img}}" style="width=100px;" class="card-img-top" alt="{{product.title}}">
+                        <p class="card-text text-center h5">
+                            <span class="badge rounded-pill bg-warning">{% percentage product.special_price product.current_price %}%</span><br>
+                            <span class="text-danger"><del>{{product.current_price}}</del></span>
+                            <span class="text-success">{{product.special_price}}</span>
+                        </p>
+                        <div class="mb-3 text-center">
+                            <div class="d-grid gap-2">
+                                {% price_distance_to_average children product%}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        {{product.updated_at}}
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                    <div class="mb-3 text-center">
+                        <div class="d-grid gap-2">
+                           <a href="{% url 'edit-product' product.id %}" class="btn btn-info btn-block">اصلاح</a>
+                        </div>
+                    </div>
+                </div>
+            <div class="row mt-2 border border-3 border-light p-3">
+                <span class="h2">پیشنهاد سیستم برای قیمت گذاری</span>
+                <div class="">
+                    <div class="mb-3 text-center">
+                        <div class="d-grid gap-2">
+                           {% average_price children %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3 text-center">
+                        <div class="d-grid gap-2">
+                          {%five_percent_above_of_average children%}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3 text-center">
+                        <div class="d-grid gap-2">
+                            {%penetration_pricing_calc children%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7 text-center border border-5 border-light rounded p-4">
+            <div class="d-flex align-items-start mt-lg-5 mt-5">
+                <div class="nav flex-column nav-pills me-3 border rounded col-md-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    {% for child in children%}
+                    <button class=" btn btn-secondary m-1 {% if forloop.first %}active{% endif %}" id="v-pills-{{child.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{child.id}}" type="button" role="tab" aria-controls="v-pills-{{child.id}}" aria-selected="true">{{child.publisher.publisher_name }}</button>
+                    {% endfor %}
+                </div>
+                <div class="tab-content col" id="v-pills-tabContent" style="width:100%;">
+                    {% for child in children%}
+                    <div class="tab-pane fade {% if forloop.first %}active show{% endif %}" id="v-pills-{{child.id}}" role="tabpanel" aria-labelledby="v-pills-{{child.id}}-tab">
+                        <div class="card text-center">
+                            <div class="card-header">
+                                <a target="_blank" href="{{child.ref}}" class="h6">{{child.title}}</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <img src="{{child.img}}" style="width:auto!important; height:200px!important;" class="card-img-top" alt="...">
+                                    </div>
+                                    <div class="col-md-8 h3 mt-5">
+                                        {% avaOrNot child.current_price child.status%} / <span class="badge rounded-pill bg-warning">{% percentage child.special_price child.current_price%}%</span><br>
+                                        <span class="text-danger"><del>{{child.current_price}}</del></span>
+                                        <span class="text-success"> {{child.special_price}}</span>
+                                        <span class="text-success"></span><br>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted" dir="ltr">
+                                updated at: {{child.updated_at}}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="mt-5 border border-light bg-light rounded text-center">
+                <span class="h3">نوسان قیمت قبل و بعد از تخفیف</span>
+        </div>
+        <div class="d-flex justify-content-center border border-3 border-light">
+        <div id="chart1"></div>
+         <div id="chart2"></div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+ $(document).ready(function(){
+     original = $("#datalist").html()
+     $("#spinner").hide()
+     $("#liveSearch").on("input",function(e){
+         console.log($("liveSearch").val())
+         if($("#liveSearch").val().length >= 4)
+         {
+             $("#spinner").show()
+             $.ajax({
+                 method:"GET",
+                 url:"{% url 'liveSearch' %}",
+                 data:{q:$("#liveSearch").val()},
+                 success:function(res){
+                     setTimeout(function(){
+                         if(res != '')
+                         {
+                             var data = ""
+                             $.each(res, function(index,value){
+                                 data += '<div class="col mb-5">\
+                                        <div class="card h-100"  style="background-color:#f8f9fa">\
+                                            <img src='+value['img']+' class="card-img-top" alt='value['title']'>"\
+                                            <!-- Product details-->\
+                                            <div class="card-body p-4">\
+                                                <div class="text-center">\
+                                                    <!-- Product name-->\
+                                                    <div style="height:100px;">\
+                                                        <h5 class="fw-bolder" >'+value['title']+'</h5>\
+                                                    </div>\
+                                                    <!-- Product price-->\
+                                                    <div class="mt-3">\
+                                                        <span class="text-danger display-6">'+value['current_price']+'</span><br>\
+                                                        <span class="text-success display-6">'+value['special_price']+'</span>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                            <!-- Product actions-->\
+                                            <div class="row mt-2">\
+                                                <div class="col-md-12">\
+                                                    <div class="mb-3 text-center">\
+                                                        <div class="d-grid gap-2">\
+                                                            <a class="btn btn-warning mt-auto" href="/book/'+value['id']+'">جزئیات</a>\
+                                                        </div>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                    </div>';
+                             });
+                             $("#datalist").html(data);
+                             $("#spinner").hide()
+                         }
+                         else
+                         {
+                             $("#spinner").hide()
+                             var data = "<p>محصولی با این جزئیات یافت نشد.</p>"
+                             $("#datalist").html(data);
+                         }
+                     }, 3000);
+                 }
+             });
+         }
+         else
+         {
+             $("#datalist").html('');
+             $('#spinner').addClass('hide');
+             $('#db').addClass('hide');
+             $("#intro").removeClass("hide");
+
+         }
+         if($("#liveSearch").val() === '' | $("#liveSearch").val().length <= 3 ){
+             $("#datalist").html(original);
+             $("#spinner").hide()
+         }
+     });
+ });
+</script>
+
+<script>
+
+</script>
+<script>
+ var options = {
+     series: [
+         {% for chart in data %}
+         {
+             name: "{{chart.0.1}}",
+             data: [{% for data in chart %}{{data.2}},{% endfor %}]
+         },
+         {% endfor %}
+     ],
+     chart: {
+         type: 'line',
+         width: 550,
+     },
+
+     title: {
+         text: 'قبل از تخفیف',
+         align: 'center'
+     },
+     grid: {
+         row: {
+             colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+             opacity: 0.5
+         },
+     },
+     xaxis: {
+         categories: [{% for label in labels reversed %}"{{label}}",{% endfor %}],
+     }
+ };
+
+ var chart = new ApexCharts(document.querySelector("#chart1"), options);
+ chart.render();
+
+</script>
+<script>
+ var options = {
+     series: [
+         {% for chart in data %}
+         {
+             name: "{{chart.0.1}}",
+             data: [{% for data in chart %}{{data.3}},{% endfor %}]
+         },
+         {% endfor %}
+     ],
+     chart: {
+         type: 'line',
+         width: 550,
+     },
+
+     title: {
+         text: 'بعد از تخفیف',
+         align: 'center'
+     },
+     grid: {
+         row: {
+             colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+             opacity: 0.5
+         },
+     },
+     xaxis: {
+         categories: [{% for label in labels reversed %}"{{label}}",{% endfor %}],
+     }
+ };
+
+ var chart = new ApexCharts(document.querySelector("#chart2"), options);
+ chart.render();
+
+</script>
+{% endblock %}
+</html>

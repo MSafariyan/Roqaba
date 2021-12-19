@@ -1,0 +1,3 @@
+* Dependencies
+=tor= and =privoxy= are required. Also they must be configured properly with Privoxy
+and match the settings defined in your =env.json=.

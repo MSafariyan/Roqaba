@@ -1,0 +1,83 @@
+{% extends "main_app/base.html" %}
+{% load main_tags %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="text-center mb-3">{{title}}</h1>
+    <div class="row">
+        <div class="d-flex justify-content-center border border-3 border-dark">
+            <div class="col-md-6 text-center">
+                <form method="POST" action="{% url 'edit-product' product.id%}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label  for="product_name" class="form-label">نام محصول</label>
+                                {% render_field form.product_name class="form-control" %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="current_price" class="form-label">قیمت قبل</label>
+                                {% render_field form.current_price class="form-control" %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="special_price" class="form-label">قیمت ویژه</label>
+                                {{form.special_price|add_class:"form-control"}}
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                <div class="mb-3" dir="ltr">
+                    <h3>محصولات مرتبط</h3>
+                    <select class="js-data-example-ajax form-control" id="id_product" multiple="multiple" name="products[]"></select>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <div class="d-grid gap-2">
+                            <input type="submit" value="Submit" class="btn btn-success btn-block"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+$('#id_product').select2({
+    placeholder: "محصول مرتبط را انتخاب کنید...",
+    closeOnSelect:false,
+    tokenSeparators: [','],
+  ajax: {
+    delay: 250,
+    url: '{% url "get_book" %}',
+    dataType: "json",
+    processResults: function (data) {
+        return {
+            results: $.map(data, function (item) {
+                return {id: item.id, text: item.title+" | "+item.publisher__publisher_name+" "};
+            })
+        };
+    }
+  },
+    minimumInputLength: 4
+});
+</script>
+<script>
+var data = [{% for x in data.selected%}
+        {"id":"{{x.id}}","title":"{{x.title}} | {{x.publisher__publisher_name}}"},
+    {% endfor %}]
+
+var SelectedBooks = $('#id_product');
+// .each loops through the array
+$.each(data, function(i){
+    SelectedBooks.append(new Option( data[i]['title'], data[i]['id'], true, true)).trigger('change');
+});
+</script>
+
+{% endblock %}
