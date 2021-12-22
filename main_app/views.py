@@ -16,14 +16,14 @@ def index(request):
 
 def show_product(request, id):
     try:
-        product = Product.objects.filter(id=id).first()
-        publishers = Publisher.objects.all()
-        child = Book.objects.filter(parent=id).order_by("publisher").all()
-        books = Book.objects.filter(parent=id).order_by("publisher")
-        labels = []
-        block = []
-        for book in books:
-            row = []
+        status = request.GET.get('status')
+        product     = Product.objects.filter(id=id).first()
+        publishers  = Publisher.objects.all()
+        child       = Book.objects.filter(parent=id).order_by("publisher").all()
+        labels      = []
+        block       = []
+        for book in child:
+            row     = []
             for candel in Book_Price_history.objects.filter(Book_id=book.pk):
                 row = [
                     *row,
@@ -37,13 +37,10 @@ def show_product(request, id):
                 labels.append(candel.created_at)
             block.append((row))
         labels = list(set(labels))
-        print(labels)
         labels = sorted(labels)
         labels = labels[::-1]
-        print(labels)
     except:
         raise Http404
-    print(block)
     return render(
         request,
         "main_app/show-product.html",
@@ -53,6 +50,7 @@ def show_product(request, id):
             "children": child,
             "data": block,
             "labels": labels,
+            "status": status
         },
     )
 
@@ -92,7 +90,6 @@ def edit_product(request, id):
             "special_price": product.special_price,
             "selected": selected,
         }
-        print(data)
         form = editProductForm(
             initial=data,
         )

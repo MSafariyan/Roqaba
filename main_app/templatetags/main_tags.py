@@ -90,35 +90,63 @@ def penetration_pricing_calc(children):
         return mark_safe(f'قیمت نفوذی: ۹٪ زیر قیمت بازار<span class="badge rounded-pill bg-danger"><p class="h5 text-white text-center">{penetration_pricing}</p></span>')
 
 @register.simple_tag
-def average_price(children):
+def average_price(children, status):
+    flag = False
+    if status == "True":
+        flag = True
+        
     if len(children) == 0:
         return 0
     else:
         child_prices = 0
-        lengh_children = len(children)
+        lengh_children = 0
         for child in children:
-            child_prices+=child.special_price
-        
+            if flag == True:
+                if child.status == True:
+                    child_prices+=child.special_price
+                    lengh_children += 1
+            else:
+                if child.status == False and len(children)!=0:
+                    child_prices+=child.special_price
+                    lengh_children += 1
+                else:
+                    child_prices = 1
+                    lengh_children = 1       
         average_price = round(child_prices/lengh_children, 1)
         return mark_safe(f'میانگین قیمت بازار<span class="badge rounded-pill bg-primary"><p class="h5 text-white text-center">{average_price}</p></span>')
 
 @register.simple_tag
-def price_distance_to_average(children, product):
+def price_distance_to_average(children, product, status):
+    flag = True
+    if status == "False":
+        flag = False
     if len(children) == 0:
         return 0
     else:
-            
         child_prices = 0
         lengh_children = len(children)
-        for child in children:
-            child_prices+=child.special_price
+        if flag == True:
+            for child in children:
+                if child.status == True:
+                    child_prices+=child.special_price
+        elif flag == False:
+            for child in children:
+                if child.status == False:
+                    child_prices+=child.special_price
+                else:
+                    child_prices=1
+                    lengh_children=1
         
         average_price = child_prices/lengh_children
         our_price = product.special_price
-
-        price_distance = round(((our_price-average_price)*100)/our_price, 1)
+        if average_price == 1:
+            price_distance = 0
+        else:
+            price_distance = round(((our_price-average_price)*100)/our_price, 1)
         if price_distance >0:
             return mark_safe(f'<span dir="ltr" class="badge rounded-pill bg-success"><p class="h5 text-white text-center">{price_distance}% بالاتر از متوسط قیمت بازار</p></span>')
+        elif price_distance == 0:
+            return mark_safe(f'<span dir="ltr" class="badge rounded-pill bg-light"><p class="h5 text-dark text-center">میانگین قیمت 0 است</p></span>')
         else:
             return mark_safe(f'<span dir="ltr" class="badge rounded-pill bg-danger"><p class="h5 text-white text-center">{price_distance}% پایین‌تر از متوسط قیمت بازار</p></span>')
 

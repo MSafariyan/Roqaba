@@ -60,7 +60,7 @@
                         </p>
                         <div class="mb-3 text-center">
                             <div class="d-grid gap-2">
-                                {% price_distance_to_average children product%}
+                                {% price_distance_to_average children product status%}
                             </div>
                         </div>
                     </div>
@@ -75,13 +75,16 @@
                            <a href="{% url 'edit-product' product.id %}" class="btn btn-info btn-block">اصلاح</a>
                         </div>
                     </div>
-                </div>
+            </div>
             <div class="row mt-2 border border-3 border-light p-3">
                 <span class="h2">پیشنهاد سیستم برای قیمت گذاری</span>
                 <div class="">
+                    <a href="{% url 'show-product' product.id%}?status=False" class="btn btn-outline-danger">محصولات ناموجود</a>
+                    <a href="{% url 'show-product' product.id%}?status=True" class="btn btn-outline-primary">محصولات موجود</a>
+                    <hr>
                     <div class="mb-3 text-center">
                         <div class="d-grid gap-2">
-                           {% average_price children %}
+                           {% average_price children status%}
                         </div>
                     </div>
                 </div>
