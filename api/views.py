@@ -9,7 +9,7 @@ def get_book(request):
     # product = Product.objects.filter().all()
     if request.is_ajax():
         term = request.GET.get('term') 
-        product = Book.objects.filter(title__search=term).all()
+        product = Book.objects.filter(title__icontaines=term).all()
         print(term)
         data = list(product.values('id', 'title', 'publisher__publisher_name'))
         print(type(data))
@@ -20,7 +20,7 @@ def liveSearch(request):
     if request.is_ajax():
         q = request.GET.get("q")
         
-        product = Product.objects.filter(title__search=q).all()
+        product = Product.objects.filter(title__icontains=q).all()
         data = list(product.values('id','title','current_price','special_price','img'))
         return JsonResponse(data, safe=False, status=200)
     

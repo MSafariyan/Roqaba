@@ -21,7 +21,9 @@
             {% for product in products %}
             <div class="col mb-5">
                 <div class="card h-100"  style="background-color:#f8f9fa">
+                <a href="{% url 'show-product' product.id %}?status=True">
                     <img src="{{product.img}}" class="card-img-top" alt="...">
+                </a>
                     <!-- Product details-->
                     <div class="card-body p-4">
                         <div class="text-center">
@@ -41,7 +43,7 @@
                         <div class="col-md-12">
                             <div class="text-center">
                                 <div class="d-grid gap-2">
-                                    <a class="btn btn-warning mt-auto rounded-0" href="{% url 'show-product' product.id %}?status=True">جزئیات</a>
+                                    <a class="btn btn-warning mt-auto rounded-0" href="">جزئیات</a>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +79,9 @@
                              $.each(res, function(index,value){
                                  data += '<div class="col mb-5">\
                                         <div class="card h-100"  style="background-color:#f8f9fa">\
+                                            <a href="/book/'+value['id']+'?status=True">\
                                             <img src="'+value['img']+'" class="card-img-top" alt="...">\
+                                            </a>\
                                             <!-- Product details-->\
                                             <div class="card-body p-4">\
                                                 <div class="text-center">\
@@ -97,7 +101,7 @@
                                                 <div class="col-md-12">\
                                                     <div class="text-center">\
                                                         <div class="d-grid gap-2">\
-                                                            <a class="roubded-0 btn btn-warning mt-auto" href="/book/'+value['id']+'">جزئیات</a>\
+                                                            <a class="roubded-0 btn btn-warning mt-auto" href="/book/'+value['id']+'?status=True">جزئیات</a>\
                                                         </div>\
                                                     </div>\
                                                 </div>\

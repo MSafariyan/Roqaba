@@ -1,5 +1,6 @@
 {% extends "main_app/base.html" %}
 {% load main_tags %}
+{% load jalali_tags %}
 {% block css %}
 <style>
  a{
@@ -43,9 +44,9 @@
 </style>
 {% endblock %}
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row mt-3">
-        <div class="col-md-5 text-center border border-5 rounded border-light p-4">
+        <div class="col-md-3 text-center border border-5 rounded border-light p-4">
             <div class="card">
                 <div class="card text-center">
                     <div class="card-header">
@@ -58,14 +59,12 @@
                             <span class="text-danger"><del>{{product.current_price}}</del></span>
                             <span class="text-success">{{product.special_price}}</span>
                         </p>
-                        <div class="mb-3 text-center">
-                            <div class="d-grid gap-2">
-                                {% price_distance_to_average children product status%}
-                            </div>
-                        </div>
+                        
                     </div>
-                    <div class="card-footer text-muted">
-                        {{product.updated_at}}
+                    <div class="card-footer text-muted" dir="ltr">
+                        {{product.updated_at|to_jalali:'%Y/%m/%d'}}
+                        <br>
+                        {{product.updated_at|to_jalali:'%H:%M:%S'}}
                     </div>
                 </div>
             </div>
@@ -77,7 +76,12 @@
                     </div>
             </div>
             <div class="row mt-2 border border-3 border-light p-3">
-                <span class="h2">پیشنهاد سیستم برای قیمت گذاری</span>
+                <!-- <span class="h5">پیشنهاد سیستم برای قیمت گذاری</span>
+                <div class="mb-3 text-center">
+                    <div class="d-grid gap-2">
+                        {% price_distance_to_average children product status%}
+                    </div>
+                </div>
                 <div class="">
                     <a href="{% url 'show-product' product.id%}?status=False" class="btn btn-outline-danger">محصولات ناموجود</a>
                     <a href="{% url 'show-product' product.id%}?status=True" class="btn btn-outline-primary">محصولات موجود</a>
@@ -87,66 +91,60 @@
                            {% average_price children status%}
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6">
+                </div> -->
+                <!-- <div class="col-md-6">
                     <div class="mb-3 text-center">
                         <div class="d-grid gap-2">
-                          {%five_percent_above_of_average children%}
+                          {%above_of_average children status%}
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6">
+                </div> -->
+                <!-- <div class="col-md-6">
                     <div class="mb-3 text-center">
                         <div class="d-grid gap-2">
-                            {%penetration_pricing_calc children%}
+                            {%penetration_pricing_calc children status%}
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
-        <div class="col-md-7 text-center border border-5 border-light rounded p-4">
-            <div class="d-flex align-items-start mt-lg-5 mt-5">
-                <div class="nav flex-column nav-pills me-3 border rounded col-md-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <div class="col-md-9 text-center border border-5 border-light rounded p-4">
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Pub</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Special</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">State</th>
+                    <th scope="col">updated</th>                    
+                </tr>
+                </thead>
+                <tbody>
                     {% for child in children%}
-                    <button class=" btn btn-secondary m-1 {% if forloop.first %}active{% endif %}" id="v-pills-{{child.id}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{child.id}}" type="button" role="tab" aria-controls="v-pills-{{child.id}}" aria-selected="true">{{child.publisher.publisher_name }}</button>
-                    {% endfor %}
-                </div>
-                <div class="tab-content col" id="v-pills-tabContent" style="width:100%;">
-                    {% for child in children%}
-                    <div class="tab-pane fade {% if forloop.first %}active show{% endif %}" id="v-pills-{{child.id}}" role="tabpanel" aria-labelledby="v-pills-{{child.id}}-tab">
-                        <div class="card text-center">
-                            <div class="card-header">
-                                <a target="_blank" href="{{child.ref}}" class="h6">{{child.title}}</a>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <img src="{{child.img}}" style="width:auto!important; height:200px!important;" class="card-img-top" alt="...">
-                                    </div>
-                                    <div class="col-md-8 h3 mt-5">
-                                        {% avaOrNot child.current_price child.status%} / <span class="badge rounded-pill bg-warning">{% percentage child.special_price child.current_price%}%</span><br>
-                                        <span class="text-danger"><del>{{child.current_price}}</del></span>
-                                        <span class="text-success"> {{child.special_price}}</span>
-                                        <span class="text-success"></span><br>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-muted" dir="ltr">
-                                updated at: {{child.updated_at}}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        </div>
-        <div class="mt-5 border border-light bg-light rounded text-center">
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{child.publisher.publisher_name }}</td>
+                            <td dir="ltr"> <a target="_blank" href="{{child.ref}}">{% trim_to_35 child.title %}</a></td> 
+                            <td><span class="text-danger"><del>{{child.current_price}}</del></span></td> 
+                            <td><span class="text-success"> {{child.special_price}}</span></td> 
+                            <td>                             <span class="badge rounded-pill bg-warning">{% percentage product.special_price product.current_price %}%</span><br> </td>
+                            <td>{% avaOrNot child.current_price child.status%}</td>
+                            <td dir="ltr">{{child.updated_at|to_jalali:'%Y/%m/%d'}}</td>
+                        </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="mt-5 border border-light bg-light rounded text-center">
                 <span class="h3">نوسان قیمت قبل و بعد از تخفیف</span>
         </div>
         <div class="d-flex justify-content-center border border-3 border-light">
         <div id="chart1"></div>
          <div id="chart2"></div>
+        </div>
+        </div>
         </div>
     </div>
 </div>
@@ -264,7 +262,7 @@
          },
      },
      xaxis: {
-         categories: [{% for label in labels reversed %}"{{label}}",{% endfor %}],
+         categories: [{% for label in labels reversed %}"{{label|to_jalali:'%Y/%m/%d'}}",{% endfor %}],
      }
  };
 
@@ -298,7 +296,7 @@
          },
      },
      xaxis: {
-         categories: [{% for label in labels reversed %}"{{label}}",{% endfor %}],
+         categories: [{% for label in labels reversed %}"{{label|to_jalali:'%Y/%m/%d'}}",{% endfor %}],
      }
  };
 

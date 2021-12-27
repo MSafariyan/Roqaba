@@ -24,7 +24,7 @@ def show_product(request, id):
         block       = []
         for book in child:
             row     = []
-            for candel in Book_Price_history.objects.filter(Book_id=book.pk):
+            for candel in Book_Price_history.objects.filter(Book_id=book.pk)[:]:
                 row = [
                     *row,
                     (

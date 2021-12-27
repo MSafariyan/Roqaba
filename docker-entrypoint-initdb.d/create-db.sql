@@ -1,3 +1,0 @@
-CREATE USER ketabland;
-CREATE DATABASE ketabland;
-GRANT ALL PRIVILEGES ON DATABASE ketabland TO ketabland;
