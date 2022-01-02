@@ -42,28 +42,16 @@ class ZabanshopSpider(scrapy.Spider):
             )
             item["img"] = product.css("img.img-responsive::attr(src)").get()
 
-            if not product.css("span.productOldPrice::text") and product.css(
-                "span.productPrice::text"
-            ):
+            if product.css("span.productOldPrice::text"):
+                item["current_price"] = price_checker(product.css("span.productOldPrice::text").get())
+                item["special_price"] = price_checker(product.css("span.productSpecialPrice::text").get())
+            elif product.css("span.productPrice::text"):
+                item["current_price"] = price_checker(product.css("span.productPrice::text").get()) 
+                item["special_price"] = 0 
+            else:                   
                 item["current_price"] = 0
                 item["special_price"] = 0
-            else:
-                item["current_price"] = (
-                    price_checker(
-                        product.css("span.productOldPrice::text").get()
-                    )
-                    if product.css("span.productOldPrice::text")
-                    else price_checker(
-                        product.css("span.productPrice::text").get()
-                    )
-                )
-                item["special_price"] = (
-                    price_checker(
-                        product.css("span.productSpecialPrice::text").get()
-                    )
-                    if product.css("span.productSpecialPrice::text")
-                    else 0
-                )
+                
             item["publisher"] = zabanshop
             
             yield item

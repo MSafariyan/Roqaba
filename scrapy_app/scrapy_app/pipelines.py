@@ -17,19 +17,47 @@ import datetime
 # NOTE: for every pipline please remember to check their spider's name.
 from django.db import models
 
+    
+import time
 def saveItem(item_exist,item):
     item = item
-    item_exist = item_exist
-    print(item_exist) 
+    item_exist = item_exist        
     if item_exist:
         print("####### THIS ITEM WAS EXIST ######")
-        item_exist.title = item["title"]
-        item_exist.status = item["status"]
-        item_exist.ref = item["ref"]
-        item_exist.current_price = item["current_price"]
-        item_exist.special_price = item["special_price"]
-        item_exist.img = item["img"]
-        item_exist.save()
+        if item_exist.special_price != item["special_price"]:
+            print("####### UPDATE PRODUCT ######")
+            print(item_exist.special_price)
+            print(item["special_price"])
+            item_exist.title = item["title"]
+            item_exist.status = item["status"]
+            item_exist.ref = item["ref"]
+            item_exist.current_price = item["current_price"]
+            item_exist.special_price = item["special_price"]
+            item_exist.img = item["img"]
+            item_exist.save()
+            price_history_last = Book_Price_history.objects.filter(Book_id=item_exist).last()
+            date_time_now =  models.DateTimeField(null=True, blank=True, auto_now_add=True)
+            if date_time_now != price_history_last.created_at:   
+                Price_history = Book_Price_history(
+                    current_price=item["current_price"],
+                    special_price=item["special_price"],
+                    Book_id=item_exist)
+                Price_history.save()
+        else:
+            print("####### ADD PRICE TO HISTOR STOCK ######")
+            price_history_last = Book_Price_history.objects.filter(Book_id=item_exist).last()
+            date_time_now =  models.DateTimeField(null=True, blank=True, auto_now_add=True)
+            if date_time_now != price_history_last.created_at:   
+                Price_history = Book_Price_history(
+                    current_price=item["current_price"],
+                    special_price=item["special_price"],
+                    Book_id=item_exist,
+                )
+                Price_history.save()
+    else:
+        print("####### New Item Found..... ######")
+        new_book = Book(**item)
+        new_book.save()
         price_history_last = Book_Price_history.objects.filter(Book_id=item_exist).last()
         date_time_now =  models.DateTimeField(null=True, blank=True, auto_now_add=True)
         if date_time_now != price_history_last.created_at:   
@@ -39,16 +67,6 @@ def saveItem(item_exist,item):
                 Book_id=item_exist,
             )
             Price_history.save()
-    else:
-        print("####### New Item Found..... ######")
-        new_book = Book(**item)
-        new_book.save()
-        Price_history = Book_Price_history(
-            current_price=item["current_price"],
-            special_price=item["special_price"],
-            Book_id=new_book,
-        )
-        Price_history.save()
 
 
 class KetablandPipeline:
@@ -77,9 +95,7 @@ class KetablandPipeline:
 class JangalPipeline:
     def __init__(self):
         pass
-
     def process_item(self, item, spider):
-
         if spider.name == "jangal":
             try:
                 jangal = Publisher.objects.filter(

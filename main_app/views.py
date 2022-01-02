@@ -6,13 +6,11 @@ from django.forms.models import model_to_dict
 from django.http import JsonResponse
 import pandas as pd
 
-
 def index(request):
     products = Product.objects.order_by("-current_price")[:50]
     return render(
         request, "main_app/index.html", {"title": "Home", "products": products}
     )
-
 
 def show_product(request, id):
     try:
@@ -24,7 +22,7 @@ def show_product(request, id):
         block       = []
         for book in child:
             row     = []
-            for candel in Book_Price_history.objects.filter(Book_id=book.pk)[:]:
+            for candel in Book_Price_history.objects.filter(Book_id=book.pk).order_by('-id')[:7]:
                 row = [
                     *row,
                     (

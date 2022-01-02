@@ -76,8 +76,8 @@
                     </div>
             </div>
             <div class="row mt-2 border border-3 border-light p-3">
-                <!-- <span class="h5">پیشنهاد سیستم برای قیمت گذاری</span>
-                <div class="mb-3 text-center">
+                <span class="h5">پیشنهاد سیستم برای قیمت گذاری</span>
+                <!-- <div class="mb-3 text-center">
                     <div class="d-grid gap-2">
                         {% price_distance_to_average children product status%}
                     </div>
@@ -113,6 +113,7 @@
                 <thead class="thead-dark">
                   <tr>
                     <th scope="col">#</th>
+                    <th scope="col">Img</th>                    
                     <th scope="col">Pub</th>
                     <th scope="col">Title</th>
                     <th scope="col">Price</th>
@@ -126,11 +127,12 @@
                     {% for child in children%}
                         <tr>
                             <td>{{forloop.counter}}</td>
+                            <td><img src="{{child.img}}" alt="" width="50px"></td>
                             <td>{{child.publisher.publisher_name }}</td>
                             <td dir="ltr"> <a target="_blank" href="{{child.ref}}">{% trim_to_35 child.title %}</a></td> 
                             <td><span class="text-danger"><del>{{child.current_price}}</del></span></td> 
                             <td><span class="text-success"> {{child.special_price}}</span></td> 
-                            <td>                             <span class="badge rounded-pill bg-warning">{% percentage product.special_price product.current_price %}%</span><br> </td>
+                            <td><span class="badge rounded-pill bg-warning">{% percentage child.special_price child.current_price %}%</span><br> </td>
                             <td>{% avaOrNot child.current_price child.status%}</td>
                             <td dir="ltr">{{child.updated_at|to_jalali:'%Y/%m/%d'}}</td>
                         </tr>
@@ -242,13 +244,13 @@
          {% for chart in data %}
          {
              name: "{{chart.0.1}}",
-             data: [{% for data in chart %}{{data.2}},{% endfor %}]
+             data: [{% for data in chart reversed %}{{data.2}},{% endfor %}]
          },
          {% endfor %}
      ],
      chart: {
          type: 'line',
-         width: 550,
+         width: 550, 
      },
 
      title: {
@@ -276,7 +278,7 @@
          {% for chart in data %}
          {
              name: "{{chart.0.1}}",
-             data: [{% for data in chart %}{{data.3}},{% endfor %}]
+             data: [{% for data in chart reversed %}{{data.3}},{% endfor %}]
          },
          {% endfor %}
      ],

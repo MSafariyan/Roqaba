@@ -9,7 +9,7 @@ def get_book(request):
     # product = Product.objects.filter().all()
     if request.is_ajax():
         term = request.GET.get('term') 
-        product = Book.objects.filter(title__icontaines=term).all()
+        product = Book.objects.filter(title__icontains=term).all()
         print(term)
         data = list(product.values('id', 'title', 'publisher__publisher_name'))
         print(type(data))
