@@ -7,14 +7,10 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ['id']
     list_display = ['title', 'current_price', 'special_price', 'created_at', 'updated_at']
 
-admin.site.register(Product, ProductAdmin)
 
 class PublisherAdmin(admin.ModelAdmin):
     ordering = ['id']
     list_display = ['publisher_name']
-
-
-admin.site.register(Publisher, PublisherAdmin)
 
 class BookAdmin(admin.ModelAdmin):
     model = Book
@@ -30,5 +26,7 @@ class BookAdmin(admin.ModelAdmin):
     publisher_name.admin_order_fields = 'publisher'
     publisher_name.short_description = 'Publisher name'
     
+admin.site.register(Product, ProductAdmin)
+admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(Book, BookAdmin)
 

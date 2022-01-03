@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "main_app",
     "django.contrib.postgres",
     "widget_tweaks",
+    "django_filters",
 ]
 
 MIDDLEWARE = [

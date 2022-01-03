@@ -33,6 +33,9 @@ class Publisher(models.Model):
     publisher_name = models.CharField(
         max_length=75, help_text="name of the publisher"
     )
+    
+    def __str__(self):
+        return self.publisher_name
 
 
 class Book(models.Model):

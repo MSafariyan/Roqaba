@@ -4,7 +4,16 @@ from django.contrib.auth.decorators import login_required
 from .forms import editProductForm
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
+from django.db import models
 import pandas as pd
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import django_filters
+
+
+class ProductFilter(django_filters.FilterSet):
+    class Meta:
+        model = Book
+        fields = ['publisher', 'status']
 
 def index(request):
     products = Product.objects.order_by("-current_price")[:50]
@@ -52,6 +61,22 @@ def show_product(request, id):
         },
     )
 
+@login_required
+def show_updated_books(request):
+    filtered_qs = ProductFilter(
+                      request.GET, 
+                      queryset=Book.objects.filter(updated_at__gte="2022-01-03", updated_at__lte="2022-01-04").order_by("publisher")
+                  )
+    paginator = Paginator(filtered_qs.qs, 13)
+    page = request.GET.get('page')
+    try:
+        response = paginator.page(page)
+    except PageNotAnInteger:
+        response = paginator.page(1)
+    except EmptyPage:
+        response = paginator.page(paginator.num_pages)
+
+    return render(request, "main_app/show-updated-books.html", {"title":"کتاب‌های به روز شده", "books":response, "filter":filtered_qs})
 
 @login_required
 def edit_product(request, id):
